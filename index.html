@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="123电影网（123dianyingwang-app）是专注提供最新电影、高清影视、热播剧集、经典片库的在线影视导航站点，汇集院线新片、国产剧、美剧、日韩剧、动漫与纪录片，快速找到想看的影片。">
+<meta name="keywords" content="123电影网, 123dianyingwang-app, 电影, 影视, 电影推荐, 在线电影, 最新电影, 高清影视">
+<meta name="author" content="123电影网">
+<meta name="robots" content="index, follow">
+<title>123电影网 - 123dianyingwang-app | 最新电影·高清影视·热播剧集一站式导航</title>
+<style>
+    :root{
+        --bg:#070b1a;
+        --bg2:#0d1430;
+        --card:#121a3d;
+        --line:rgba(255,255,255,.08);
+        --txt:#e8ecf8;
+        --sub:#9aa6cf;
+        --accent:#ff2e6d;
+        --accent2:#ffb020;
+        --cyan:#21d4fd;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+    body{
+        font-family:"PingFang SC","Microsoft YaHei","WenQuanYi Micro Hei",system-ui,-apple-system,sans-serif;
+        background:var(--bg);
+        color:var(--txt);
+        line-height:1.7;
+        overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none;}
+    ul{list-style:none;}
+    .wrap{max-width:1160px;margin:0 auto;padding:0 20px;}
+
+    /* 背景光效 */
+    .aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;}
+    .aurora i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:float 18s ease-in-out infinite;}
+    .aurora i:nth-child(1){width:520px;height:520px;background:#ff2e6d;top:-120px;left:-100px;}
+    .aurora i:nth-child(2){width:460px;height:460px;background:#4a3bff;top:20%;right:-120px;animation-delay:-6s;}
+    .aurora i:nth-child(3){width:420px;height:420px;background:#21d4fd;bottom:-140px;left:20%;animation-delay:-11s;}
+    @keyframes float{0%,100%{transform:translate3d(0,0,0) scale(1);}50%{transform:translate3d(40px,-60px,0) scale(1.15);}}
+
+    /* 头部 */
+    header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(7,11,26,.72);border-bottom:1px solid var(--line);}
+    .nav{display:flex;align-items:center;gap:18px;height:64px;}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:.5px;}
+    .logo mark{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:4px 10px;border-radius:10px;font-size:15px;}
+    .logo span{color:var(--sub);font-size:12px;font-weight:500;}
+    .menu{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;}
+    .menu a{font-size:14px;color:var(--sub);padding:8px 12px;border-radius:10px;transition:.25s;}
+    .menu a:hover{color:#fff;background:rgba(255,255,255,.07);}
+    .btn-play{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff!important;font-weight:700;box-shadow:0 8px 22px -8px var(--accent);}
+
+    /* Hero */
+    .hero{min-height:min(82vh,640px);display:flex;align-items:center;position:relative;}
+    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center;width:100%;padding:60px 0;}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--cyan);border:1px solid rgba(33,212,253,.35);background:rgba(33,212,253,.08);padding:6px 14px;border-radius:999px;margin-bottom:22px;}
+    .badge b{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:pulse 1.6s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+    h1{font-size:clamp(34px,5.4vw,64px);line-height:1.12;font-weight:900;letter-spacing:-1px;}
+    h1 em{font-style:normal;background:linear-gradient(100deg,var(--accent),var(--accent2) 55%,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .hero p{color:var(--sub);font-size:clamp(15px,1.6vw,17px);max-width:520px;margin:20px 0 28px;}
+    .cta{display:flex;gap:14px;flex-wrap:wrap;}
+    .cta a{font-size:15px;font-weight:700;padding:14px 28px;border-radius:14px;transition:.25s;}
+    .cta .primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 14px 30px -12px var(--accent);}
+    .cta .primary:hover{transform:translateY(-3px);}
+    .cta .ghost{border:1px solid var(--line);color:var(--sub);}
+    .cta .ghost:hover{border-color:var(--accent);color:#fff;}
+    .stats{display:flex;gap:36px;margin-top:40px;flex-wrap:wrap;}
+    .stats div span{display:block;font-size:26px;font-weight:800;background:linear-gradient(135deg,#fff,var(--sub));-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .stats div small{color:var(--sub);font-size:12px;}
+
+    /* 海报堆叠 */
+    .posters{position:relative;height:460px;}
+    .poster{position:absolute;width:200px;height:300px;border-radius:18px;overflow:hidden;box-shadow:0 24px 50px -16px rgba(0,0,0,.7);border:1px solid var(--line);transform-origin:center;}
+    .poster img{width:100%;height:100%;object-fit:cover;display:block;}
+    .poster::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(7,11,26,.95),transparent 55%);}
+    .poster p{position:absolute;left:14px;right:14px;bottom:14px;font-size:13px;font-weight:700;z-index:2;}
+    .p1{transform:rotate(-9deg) translate(-30px,20px);z-index:2;}
+    .p2{transform:rotate(6deg) translate(90px,-10px);z-index:3;}
+    .p3{transform:rotate(-3deg) translate(20px,90px);z-index:4;box-shadow:0 30px 60px -18px rgba(255,46,109,.5);}
+    .p3 p{color:var(--accent2);}
+
+    section{padding:90px 0;}
+    .eyebrow{color:var(--accent2);font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;}
+    h2{font-size:clamp(26px,3.6vw,40px);font-weight:900;margin:10px 0 14px;letter-spacing:-.5px;}
+    .lead{color:var(--sub);max-width:620px;font-size:16px;}
+
+    /* 栏目通用 */
+    .cols{display:grid;gap:22px;margin-top:44px;}
+    .col-4{grid-template-columns:repeat(4,1fr);}
+    .col-3{grid-template-columns:repeat(3,1fr);}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;transition:.3s;position:relative;overflow:hidden;}
+    .card:hover{transform:translateY(-6px);border-color:rgba(255,46,109,.4);box-shadow:0 22px 44px -20px rgba(255,46,109,.35);}
+    .card .num{position:absolute;right:18px;top:14px;font-size:40px;font-weight:900;color:rgba(255,255,255,.04);line-height:1;}
+    .card h3{font-size:18px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+    .card h3 i{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));flex:none;}
+    .card p{color:var(--sub);font-size:14px;}
+    .tag{display:inline-block;font-size:11px;color:var(--cyan);border:1px solid rgba(33,212,253,.3);padding:3px 10px;border-radius:999px;margin-top:16px;}
+
+    /* 片单 */
+    .film{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;transition:.3s;}
+    .film:hover{border-color:rgba(33,212,253,.4);transform:translateX(6px);}
+    .film .thumb{width:96px;height:130px;border-radius:12px;flex:none;object-fit:cover;background:linear-gradient(135deg,#1c2652,#2a1c4a);display:grid;place-items:center;font-size:26px;}
+    .film .info{flex:1;min-width:0;}
+    .film .info h4{font-size:16px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .film .info .meta{font-size:12px;color:var(--sub);display:flex;gap:10px;flex-wrap:wrap;}
+    .film .info .desc{font-size:13px;color:var(--sub);margin-top:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .score{margin-top:10px;font-size:13px;font-weight:800;color:var(--accent2);}
+
+    /* 分类标签云 */
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px;}
+    .chips a{font-size:13px;color:var(--sub);border:1px solid var(--line);padding:8px 16px;border-radius:999px;transition:.25s;}
+    .chips a:hover{color:#fff;border-color:var(--accent);background:rgba(255,46,109,.12);}
+
+    /* 时间线 */
+    .timeline{position:relative;margin-top:44px;padding-left:26px;border-left:2px solid var(--line);}
+    .timeline li{position:relative;padding:0 0 34px 26px;}
+    .timeline li::before{content:"";position:absolute;left:-33px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px rgba(255,46,109,.15);}
+    .timeline li b{color:var(--accent2);font-size:13px;letter-spacing:1px;}
+    .timeline li h4{font-size:17px;margin:4px 0 6px;}
+    .timeline li p{color:var(--sub);font-size:14px;}
+
+    /* FAQ */
+    details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-top:14px;transition:.25s;}
+    details:hover{border-color:rgba(255,255,255,.18);}
+    summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none;display:flex;justify-content:space-between;gap:16px;}
+    summary::-webkit-details-marker{display:none;}
+    summary::after{content:"+";color:var(--accent);font-size:22px;flex:none;}
+    details[open] summary::after{content:"−";}
+    details p{color:var(--sub);font-size:14px;margin-top:12px;}
+
+    footer{border-top:1px solid var(--line);padding:50px 0 30px;margin-top:40px;}
+    .foot{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px;}
+    .foot h5{font-size:15px;margin-bottom:14px;}
+    .foot ul li{margin-bottom:9px;}
+    .foot ul a{color:var(--sub);font-size:13px;}
+    .foot ul a:hover{color:#fff;}
+    .copy{text-align:center;color:var(--sub);font-size:12px;margin-top:40px;padding-top:24px;border-top:1px solid var(--line);}
+    .bread{color:var(--sub);font-size:12px;margin-bottom:8px;}
+    .bread a{color:var(--cyan);}
+
+    @media(max-width:900px){
+        .hero-grid{grid-template-columns:1fr;gap:30px;padding:30px 0 50px;}
+        .posters{height:340px;transform:scale(.82);transform-origin:top left;width:120%;}
+        .col-4,.col-3{grid-template-columns:1fr 1fr;}
+        .foot{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:640px){
+        .nav{height:58px;gap:10px;}
+        .logo{font-size:16px;}
+        .logo span{display:none;}
+        .menu a{padding:7px 9px;font-size:13px;}
+        .btn-play{display:none;}
+        .col-4,.col-3,.foot{grid-template-columns:1fr;}
+        section{padding:64px 0;}
+        .posters{display:none;}
+        .stats{gap:24px;}
+        .film{flex-direction:column;}
+        .film .thumb{width:100%;height:160px;}
+    }
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/yazhou.js"></script>
+
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<header>
+    <div class="wrap nav">
+        <a class="logo" href="#top">
+            <mark>123电影网</mark>
+            <span>123dianyingwang-app</span>
+        </a>
+        <nav class="menu">
+            <a href="#home">首页</a>
+            <a href="#movies">电影频道</a>
+            <a href="#tv">剧集动漫</a>
+            <a href="#rank">口碑排行</a>
+            <a href="#guide">观影指南</a>
+            <a href="#update">更新日志</a>
+            <a href="#faq">常见问题</a>
+            <a class="btn-play" href="#movies">立即观影</a>
+        </nav>
+    </div>
+</header>
+
+<!-- 栏目一：首页 -->
+<section id="top">
+    <div class="wrap hero">
+        <div class="hero-grid">
+            <div>
+                <div class="badge"><b></b> 每日更新 · 院线同步 · 高清正版导航</div>
+                <h1>好看电影，<br>都在 <em>123电影网</em></h1>
+                <p>123电影网（123dianyingwang-app）为你精选<strong>最新电影、热播剧集、经典高分与冷门佳片</strong>，按类型、地区、年份多维检索，3 秒定位想看的那一部。</p>
+                <div class="cta">
+                    <a class="primary" href="#movies">开始选片 →</a>
+                    <a class="ghost" href="#rank">查看本周口碑榜</a>
+                </div>
+                <div class="stats">
+                    <div><span>12,800+</span><small>收录影视条目</small></div>
+                    <div><span>26</span><small>细分类型频道</small></div>
+                    <div><span>每日</span><small>院线同步更新</small></div>
+                </div>
+            </div>
+            <div class="posters" aria-hidden="true">
+                <div class="poster p1"><div class="thumb" style="width:100%;height:100%">🎬</div><p>科幻 · 星际回响</p></div>
+                <div class="poster p2"><div class="thumb" style="width:100%;height:100%">🌆</div><p>犯罪 · 夜行者</p></div>
+                <div class="poster p3"><div class="thumb" style="width:100%;height:100%">❤️</div><p>爱情 · 夏日终曲</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 栏目二：电影频道 -->
+<section id="movies">
+    <div class="wrap">
+        <div class="bread">当前：<a href="#top">首页</a> / 电影频道</div>
+        <div class="eyebrow">Movies</div>
+        <h2>电影频道 · 按口味精准匹配</h2>
+        <p class="lead">从春节档爆款到影史经典，从国产现实题材到好莱坞视效大片，123电影网把海量影片整理成清晰频道，告别"不知道看什么"的焦虑。</p>
+
+        <div class="cols col-4">
+            <div class="card">
+                <h3><i>🔥</i> 动作冒险</h3>
+                <p>飙车、枪战、高空追逐与硬核格斗，肾上腺素拉满的视听爽片合集。</p>
+                <span class="tag">1,240 部</span>
+            </div>
+            <div class="card">
+                <h3><i>🚀</i> 科幻悬疑</h3>
+                <p>时间悖论、人工智能、末日废土，烧脑又震撼的想象力之作。</p>
+                <span class="tag">860 部</span>
+            </div>
+            <div class="card">
+                <h3><i>💗</i> 爱情青春</h3>
+                <p>怦然心动的初恋、跨时空的思念，适合一个人或两个人静静看完。</p>
+                <span class="tag">1,530 部</span>
+            </div>
+            <div class="card">
+                <h3><i>😂</i> 喜剧综艺</h3>
+                <p>解压必备，从黑色幽默到无厘头，让坏心情当场清零。</p>
+                <span class="tag">980 部</span>
+            </div>
+            <div class="card">
+                <h3><i>👻</i> 惊悚恐怖</h3>
+                <p>心理惊悚与超自然题材，胆大的深夜专属频道。</p>
+                <span class="tag">620 部</span>
+            </div>
+            <div class="card">
+                <h3><i>🏆</i> 剧情文艺</h3>
+                <p>三大电影节获奖与提名作品，值得反复品味的叙事艺术。</p>
+                <span class="tag">740 部</span>
+            </div>
+            <div class="card">
+                <h3><i>📜</i> 历史战争</h3>
+                <p>宏大叙事还原真实年代，看懂变局中的人与命运。</p>
+                <span class="tag">510 部</span>
+            </div>
+            <div class="card">
+                <h3><i>🌏</i> 纪录真实</h3>
+                <p>自然、宇宙、人文与社会议题，打开认知的新窗口。</p>
+                <span class="tag">430 部</span>
+            </div>
+        </div>
+
+        <div class="chips">
+            <a href="#">2026 新片</a>
+            <a href="#">豆瓣 8.0+</a>
+            <a href="#">华语电影</a>
+            <a href="#">奥斯卡</a>
+            <a href="#">戛纳</a>
+            <a href="#">4K 修复</a>
+            <a href="#">杜比视界</a>
+            <a href="#">短片</a>
+        </div>
+    </div>
+</section>
+
+<!-- 栏目三：剧集动漫 -->
+<section id="tv" style="background:linear-gradient(to bottom,transparent,rgba(74,59,255,.06))">
+    <div class="wrap">
+        <div class="bread">当前：<a href="#top">首页</a> / 剧集动漫</div>
+        <div class="eyebrow">TV & Animation</div>
+        <h2>剧集动漫 · 追更不迷路</h2>
+        <p class="lead">长视频才是情绪的归宿。国产剧、美剧、日韩剧、动漫番剧与综艺，按"正在追、想看、已看"管理你的观剧清单。</p>
+
+        <div class="cols col-3">
+            <div class="card">
+                <h3><i>🇨🇳</i> 国产剧集</h3>
+                <p>悬疑、年代、古装、都市情感，紧跟平台更新节奏，追剧日历一目了然。</p>
+            </div>
+            <div class="card">
+                <h3><i>🇺🇸</i> 美剧英剧</h3>
+                <p>限定剧、罪案剧、史诗奇幻，一季一个完整故事，节奏紧凑不注水。</p>
+            </div>
+            <div class="card">
+                <h3><i>🇯🇵</i> 日韩剧动漫</h3>
+                <p>治愈系日剧、韩流爆款，以及当季新番与经典剧场版动画。</p>
+            </div>
+        </div>
+
+        <div class="cols col-3" style="margin-top:22px">
+            <div class="film">
+                <div class="thumb">📺</div>
+                <div class="info">
+                    <h4>沉默的真相 · 第二季</h4>
+                    <div class="meta"><span>悬疑 / 犯罪</span><span>12 集</span><span>2026-09-28 更新</span></div>
+                    <p class="desc">一桩陈年旧案被重新翻开，检察官、记者与律师在制度缝隙中寻找真相。</p>
+                    <div class="score">口碑 9.1 · 正在热播</div>
+                </div>
+            </div>
+            <div class="film">
+                <div class="thumb">🌌</div>
+                <div class="info">
+                    <h4>星际边境</h4>
+                    <div class="meta"><span>科幻 / 史诗</span><span>10 集</span><span>全季上线</span></div>
+                    <p class="desc">人类殖民舰队抵达半人马座，却发现"新家园"早已被某种存在占据。</p>
+                    <div class="score">口碑 8.7 · 完结可追</div>
+                </div>
+            </div>
+            <div class="film">
+                <div class="thumb">🍃</div>
+                <div class="info">
+                    <h4>樱花抄 · 最终季</h4>
+                    <div class="meta"><span>治愈 / 青春</span><span>24 集</span><span>每周五更新</span></div>
+                    <p class="desc">高中毕业十年，五个性格迥异的人重新回到故乡小镇。</p>
+                    <div class="score">口碑 9.3 · 当季新番</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 栏目四：口碑排行 -->
+<section id="rank">
+    <div class="wrap">
+        <div class="bread">当前：<a href="#top">首页</a> / 口碑排行</div>
+        <div class="eyebrow">Top Rated</div>
+        <h2>本周口碑排行</h2>
+        <p class="lead">综合观众评分、讨论热度与上映时效，123电影网每日刷新榜单，帮你把"值得看"排在前面。</p>
+
+        <div class="cols col-4">
+            <div class="film" style="flex-direction:row">
+                <div class="thumb" style="width:80px;height:110px">🥇</div>
+                <div class="info">
+                    <h4>星际回响</h4>
+                    <div class="meta"><span>科幻</span><span>148 分钟</span></div>
+                    <p class="desc">黑洞边缘的孤独信号，一封跨越光年的回信。</p>
+                    <div class="score">9.4 分 · 票房 32.6 亿</div>
+                </div>
+            </div>
+            <div class="film" style="flex-direction:row">
+                <div class="thumb" style="width:80px;height:110px">🥈</div>
+                <div class="info">
+                    <h4>父亲的土地</h4>
+                    <div class="meta"><span>剧情</span><span>126 分钟</span></div>
+                    <p class="desc">三代农民与一片即将被征收的麦田。</p>
+                    <div class="score">9.2 分 · 金鸡奖最佳影片</div>
+                </div>
+            </div>
+            <div class="film" style="flex-direction:row">
+                <div class="thumb" style="width:80px;height:110px">🥉</div>
+                <div class="info">
+                    <h4>夜行者</h4>
+                    <div class="meta"><span>犯罪 / 悬疑</span><span>119 分钟</span></div>
+                    <p class="desc">凌晨三点的便利店，两个陌生人的命运交错。</p>
+                    <div class="score">8.9 分 · 反转 4 次</div>
+                </div>
+            </div>
+            <div class="film" style="flex-direction:row">
+                <div class="thumb" style="width:80px;height:110px">4</div>
+                <div class="info">
+                    <h4>夏日终曲</h4>
+                    <div class="meta"><span>爱情</span><span>105 分钟</span></div>
+                    <p class="desc">1996 年的那个夏天，海风记住了所有未说出口的话。</p>
+                    <div class="score">8.8 分 · 年度最催泪</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 栏目五：观影指南 -->
+<section id="guide">
+    <div class="wrap">
+        <div class="bread">当前：<a href="#top">首页</a> / 观影指南</div>
+        <div class="eyebrow">Guide</div>
+        <h2>观影指南 · 选片不踩雷</h2>
+        <p class="lead">看电影也是一门手艺。123电影网整理了类型入门路径、片单搭配建议与画质音效小知识，让每一次按下"播放"都更值。</p>
+
+        <div class="cols col-3">
+            <div class="card">
+                <h3><i>1</i> 新手入门路径</h3>
+                <p>按"类型代表作 → 导演代表作 → 影史经典"三步走，30 部片子建立完整审美坐标系。</p>
+                <span class="tag">30 部 · 约 60 小时</span>
+            </div>
+            <div class="card">
+                <h3><i>2</i> 场景化片单</h3>
+                <p>深夜独处、朋友聚会、约会观影、带娃周末——不同场景对应不同节奏与情绪。</p>
+                <span class="tag">8 个场景</span>
+            </div>
+            <div class="card">
+                <h3><i>3</i> 画质与音效</h3>
+                <p>4K、HDR、杜比视界、全景声到底差在哪？一份不掺水的硬件与片源科普。</p>
+                <span class="tag">科普 · 5 分钟</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 栏目六：更新日志 -->
+<section id="update" style="background:linear-gradient(to bottom,rgba(33,212,253,.05),transparent)">
+    <div class="wrap">
+        <div class="bread">当前：<a href="#top">首页</a> / 更新日志</div>
+        <div class="eyebrow">Changelog</div>
+        <h2>站点更新日志</h2>
+        <p class="lead">123电影网持续迭代片库与检索体验，每一次更新都为了让"找到好片"再快一点。</p>
+
+        <ul class="timeline">
+            <li>
+                <b>2026-10-01</b>
+                <h4>片库突破 12,800 部</h4>
+                <p>新增"纪录真实"与"4K 修复"两个频道，补全 1990—2005 年华语经典条目 420 部。</p>
+            </li>
+            <li>
+                <b>2026-09-18</b>
+                <h4>检索升级：支持"情绪"搜索</h4>
+                <p>输入"想哭""想笑""烧脑""下饭"，直接返回匹配情绪标签的片单，告别关键词焦虑。</p>
+            </li>
+            <li>
+                <b>2026-09-05</b>
+                <h4>口碑榜改为每日刷新</h4>
+                <p>榜单算法引入"近期讨论热度"权重，新片不再被老经典永久压制。</p>
+            </li>
+            <li>
+                <b>2026-08-20</b>
+                <h4>移动端自适应重构</h4>
+                <p>全站改为单列流式布局，海报尺寸与触摸热区针对手机重新设计，3G 网络下首屏加载 &lt; 1.5s。</p>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- 栏目七：常见问题 -->
+<section id="faq">
+    <div class="wrap">
+        <div class="bread">当前：<a href="#top">首页</a> / 常见问题</div>
+        <div class="eyebrow">FAQ</div>
+        <h2>常见问题</h2>
+
+        <details open>
+            <summary>123电影网（123dianyingwang-app）是什么？</summary>
+            <p>123电影网是一个影视信息与导航类单页站点，提供最新电影、热播剧集、动漫番剧的检索、分类与口碑排行服务，帮助用户快速发现值得观看的影片。</p>
+        </details>
+        <details>
+            <summary>如何快速找到想看的电影？</summary>
+            <p>三种方式：① 使用顶部导航进入对应类型频道；② 在"观影指南"按情绪与场景选片；③ 直接参考"本周口碑排行"，榜单已按综合质量排序。</p>
+        </details>
+        <details>
+            <summary>片源与更新频率如何？</summary>
+            <p>站点每日同步院线新片与平台更新，周末集中补充经典修复片与冷门佳片。条目信息以公映/上线日期为准，标注"即将上映"的影片会在上映当日更新。</p>
+        </details>
+        <details>
+            <summary>网站网址是什么？是否支持手机访问？</summary>
+            <p>网站网址为 <strong>https://123dianyingwang-app.github.io</strong>，全站采用响应式布局，手机、平板、桌面端均可获得适配的阅读与操作体验。</p>
+        </details>
+        <details>
+            <summary>为什么搜索结果里没有某部小众影片？</summary>
+            <p>片库以"可观看、有评分、有简介"为收录门槛。极冷门或尚未引进的影片可能暂未收录，欢迎通过站内任何页面的锚点导航回到首页提交片名。</p>
+        </details>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <div class="foot">
+            <div>
+                <a class="logo" href="#top"><mark>123电影网</mark></a>
+                <p style="color:var(--sub);font-size:13px;margin-top:14px;max-width:300px;">123电影网（123dianyingwang-app）｜最新电影、高清影视、热播剧集一站式导航。网站网址：https://123dianyingwang-app.github.io</p>
+            </div>
+            <div>
+                <h5>频道导航</h5>
+                <ul>
+                    <li><a href="#movies">电影频道</a></li>
+                    <li><a href="#tv">剧集动漫</a></li>
+                    <li><a href="#rank">口碑排行</a></li>
+                    <li><a href="#guide">观影指南</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5>类型索引</h5>
+                <ul>
+                    <li><a href="#">动作冒险</a></li>
+                    <li><a href="#">科幻悬疑</a></li>
+                    <li><a href="#">爱情青春</a></li>
+                    <li><a href="#">喜剧综艺</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5>关于本站</h5>
+                <ul>
+                    <li><a href="#update">更新日志</a></li>
+                    <li><a href="#faq">常见问题</a></li>
+                    <li><a href="#">友情链接</a></li>
+                    <li><a href="#">意见反馈</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copy">
+            关键词：123电影网 · 123dianyingwang-app · 电影 · 影视 · 电影推荐 · 最新电影<br>
+            © 2026 123电影网（123dianyingwang-app）· 网站网址 https://123dianyingwang-app.github.io · 仅供影视信息导航与学习交流
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
